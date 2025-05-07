@@ -4,11 +4,12 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	_ "github.com/pingpanu/Pongpan_Ingpanuwong_test/Answer 3/backend/docs"
+	_ "example/backend/docs"
 )
 
 // @title Todo API
@@ -46,10 +47,10 @@ func main() {
 	//API routes
 	v1 := r.Group("/api")
 	{
-		r.GET("/todos", newTodo.listTodos)
-		r.POST("/todos", newTodo.createNewTodo)
-		r.PUT("/todos/:id", newTodo.editTodo)
-		r.DELETE("/todos/:id", newTodo.deleteTodo)
+		v1.GET("/todos", newTodo.listTodos)
+		v1.POST("/todos", newTodo.createNewTodo)
+		v1.PUT("/todos/:id", newTodo.editTodo)
+		v1.DELETE("/todos/:id", newTodo.deleteTodo)
 	}
 	r.Run()
 }

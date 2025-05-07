@@ -18,8 +18,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/api",
     "paths": {
         "/api/Todos": {
             "get": {

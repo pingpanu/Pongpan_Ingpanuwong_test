@@ -1,7 +1,7 @@
-GET http://localhost:8080/todos
+GET http://localhost:8080/api/todos
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:8080/api/todos
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8080/todos
+POST http://localhost:8080/api/todos
 Content-Type: applocation/application/json
 
 {
@@ -19,18 +19,27 @@ Content-Type: applocation/application/json
 }
 ###
 
-PUT http://localhost:8080/todos/2
+PUT http://localhost:8080/api/todos/4
 Content-Type: application/json
 
 {
-    "title": "Write an algorithm",
-    "detail": "Write an algorithm to calculate any area based on vectices user applied",
-    "status": "True"
+    "title": "Drink sparkling alcohol",
+    "detail": "As a celebration of my RestAPI with SwaggerUI, it's time to cheers"
 }
 ###
 
-DELETE http://localhost:8080/todos/2
+DELETE http://localhost:8080/api/todos/2
 ###
 
-DELETE http://localhost:8080/todos/0
+DELETE http://localhost:8080/api/todos/0
+###
+
+PUT http://localhost:8080/api/todos/3
+Content-Type: application/json
+
+{
+    "title": "Tiktok brainrot",
+    "detail": "To much tung tung tung tung tung tung sahur could melt your brain.",
+    "status": true
+}
 ###
