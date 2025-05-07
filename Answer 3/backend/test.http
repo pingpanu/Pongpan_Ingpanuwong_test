@@ -1,0 +1,36 @@
+GET http://localhost:8080/todos
+###
+
+POST http://localhost:8080/todos
+Content-Type: application/json
+
+{
+    "title": "Jogging",
+    "detail": "Do a 5km jogging at Suvannabhumi Airpot Happy and Healthy Bike Lane"
+}
+###
+
+POST http://localhost:8080/todos
+Content-Type: applocation/application/json
+
+{
+    "title": "Tiktok brainrot",
+    "detail": "To much tung tung tung tung tung tung sahur could melt your brain."
+}
+###
+
+PUT http://localhost:8080/todos/2
+Content-Type: application/json
+
+{
+    "title": "Write an algorithm",
+    "detail": "Write an algorithm to calculate any area based on vectices user applied",
+    "status": "True"
+}
+###
+
+DELETE http://localhost:8080/todos/2
+###
+
+DELETE http://localhost:8080/todos/0
+###
