@@ -7,6 +7,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	_ "github.com/pingpanu/Pongpan_Ingpanuwong_test/Answer 3/backend/docs"
 )
 
 // @title Todo API
