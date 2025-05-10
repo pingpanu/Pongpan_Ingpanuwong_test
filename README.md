@@ -21,8 +21,4 @@ Please refer to the following
     4) User can delete the Todo by press the red button
     5) Whenever user do anything to any Todo, the app will automatically load the current state of Todos.
        
-    The backend is written in Go language because I mainly use C language when study at 42Bangkok, and I shortly found that
-    I'm really familiar with Go really fast
-    The frontend is written in Flutter because I have zero experience on Frontend, and since we currently access web via
-    website or App on mobile phone, the frontend language with cross-platform functionality would be useful for being a
-    full-stack developer.
+    To set the backend running, create a .env file in backend directory, and type in any password in SQL_PASSWORD=(your password) and save it before using cmd "go run ."
