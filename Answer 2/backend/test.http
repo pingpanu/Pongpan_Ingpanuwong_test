@@ -19,7 +19,7 @@ Content-Type: applocation/application/json
 }
 ###
 
-PUT http://localhost:8080/api/todos/4
+PUT http://localhost:8080/api/todos/2
 Content-Type: application/json
 
 {
@@ -28,18 +28,15 @@ Content-Type: application/json
 }
 ###
 
-DELETE http://localhost:8080/api/todos/2
+DELETE http://localhost:8080/api/todos/3
 ###
 
 DELETE http://localhost:8080/api/todos/0
 ###
 
-PUT http://localhost:8080/api/todos/3
+PUT http://localhost:8080/api/todos/3/flip-status
 Content-Type: application/json
 
 {
-    "title": "Tiktok brainrot",
-    "detail": "To much tung tung tung tung tung tung sahur could melt your brain.",
-    "status": true
 }
 ###

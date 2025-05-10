@@ -27,7 +27,7 @@ func newHandler(db *gorm.DB) *Handler {
 // @Description Get a list of all todos
 // @Produce json
 // @Success 200 {array} Todo
-// @Router /api/Todos [get]
+// @Router /api/todos [get]
 func (r *Handler) listTodos(c *gin.Context) {
 	var todos []Todo
 
@@ -49,7 +49,7 @@ func (r *Handler) listTodos(c *gin.Context) {
 // @Success 201 {object} Todo
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/Todos [post]
+// @Router /api/todos [post]
 func (r *Handler) createNewTodo(c *gin.Context) {
 	// I designed this function to only receive Title and Detail only to simplify front-end development
 	// so Annonymous Todo struct is here to bind Title and Detail
@@ -88,12 +88,12 @@ func (r *Handler) createNewTodo(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Todo ID to be updated"
-// @Param todo body main.Todo true "Todo object to be updated"
+// @Param todo body main.Todo true "Todo object to be updated title and/or detail"
 // @Success 200 {object} Todo
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/Todos/{id} [put]
+// @Router /api/todos/{id} [put]
 func (r *Handler) editTodo(c *gin.Context) {
 	//check if json id is valid
 	id, err := strconv.Atoi(c.Param("id"))
@@ -126,9 +126,8 @@ func (r *Handler) editTodo(c *gin.Context) {
 
 	// updated struct is still needed as Data Transfer Object to prevent modifying ID of the Todo
 	var updated struct {
-		Title     string `json:"title"`
-		Detail    string `json:"detail"`
-		Completed bool   `json:"status"`
+		Title  string `json:"title"`
+		Detail string `json:"detail"`
 	}
 	if err := c.ShouldBindJSON(&updated); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -139,7 +138,59 @@ func (r *Handler) editTodo(c *gin.Context) {
 
 	todo.Title = updated.Title
 	todo.Detail = updated.Detail
-	todo.Completed = updated.Completed
+
+	// save the edited todo, if failed, return 500 internal server error
+	if err := r.db.Save(&todo).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, &todo)
+}
+
+// @Summary Toggle the completion status of a todo
+// @Description Toggle the completion status (true/false) of a todo item by ID.
+// @Produce json
+// @Param id path int true "Todo ID to toggle status"
+// @Success 200 {object} Todo
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/todos/{id}/toggle-status [put]
+func (r *Handler) flipTodoStatus(c *gin.Context) {
+	//check if parameter id is valid
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid ID format",
+		})
+		return
+	}
+
+	//check two things,
+	// 1) do the record exist (404 not found?)
+	// 2) do the first operation failed (not likely to happened but it can)
+	// Noted that the red warning message from GORM will always appeared on console.log,
+	// I'm new to Golang so I don't want to disable it right now.
+	var todo Todo
+	if err := r.db.First(&todo, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound { //Check specifically for "record not found" error
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Todo " + c.Param("id") + " not found",
+			})
+			return
+		}
+		//In case it's not record not found, it would be internal server error
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	//Flip the boolean value
+	todo.Completed = !todo.Completed
 
 	// save the edited todo, if failed, return 500 internal server error
 	if err := r.db.Save(&todo).Error; err != nil {
@@ -159,7 +210,7 @@ func (r *Handler) editTodo(c *gin.Context) {
 // @Success 204 "No Content"
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/Todos/{id} [delete]
+// @Router /api/todos/{id} [delete]
 func (r *Handler) deleteTodo(c *gin.Context) {
 	//check if request is in good shape
 	id, err := strconv.Atoi(c.Param("id"))

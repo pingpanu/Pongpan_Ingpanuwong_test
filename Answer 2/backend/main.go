@@ -1,15 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	_ "example/backend/docs"
+
+	_ "github.com/glebarez/go-sqlite"
 )
 
 // @title Todo API
@@ -27,19 +35,51 @@ import (
 // @schemes http
 
 func main() {
-	// I'm new to golang, and I followed the instruction from a website that use
-	// GORM with sqlite, so I decided to stick to this for now,
-	db, err := gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
+	//get .env variable for sql password
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
 
+	sqlpass := os.Getenv("SQL_PASSWORD")
+	log.Printf("API Key loaded: %s", sqlpass)
+
+	//Make struct for output log
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold:             200 * time.Millisecond,
+			LogLevel:                  logger.Info,
+			IgnoreRecordNotFoundError: true,
+			Colorful:                  true,
+		},
+	)
+
+	// This project is small so I use sqlite for simplicity, I start by embedded db in password,
+	// migrate todo struct to db, and send db to a Go method as "Dependency Injection"
+	// that would make this RestAPI more flexible.
+	db, err := gorm.Open(sqlite.Open(fmt.Sprintf("todo.db?_pragma_key=%s", sqlpass)), &gorm.Config{
+		Logger: newLogger,
+	})
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-
-	//I want to know if I can add security measure to this db
 	db.AutoMigrate(&Todo{})
 	newTodo := newHandler(db)
 
-	r := gin.New()
+	// gin.New() is only good for learning, but it need Middleware for logging and recovery.
+	r := gin.Default()
+
+	// Add CORS middleware to make cross-origin request possible
+	// i.e. have Android, IOS, and Chrome request this RestAPI
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Change "*" to specific domains in production
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	//Swagger endpoint
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -50,6 +90,7 @@ func main() {
 		v1.GET("/todos", newTodo.listTodos)
 		v1.POST("/todos", newTodo.createNewTodo)
 		v1.PUT("/todos/:id", newTodo.editTodo)
+		v1.PUT("/todos/:id/flip-status", newTodo.flipTodoStatus)
 		v1.DELETE("/todos/:id", newTodo.deleteTodo)
 	}
 	r.Run()

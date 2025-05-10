@@ -36,7 +36,7 @@ info:
   title: Todo API
   version: "1.0"
 paths:
-  /api/Todos:
+  /api/todos:
     get:
       description: Get a list of all todos
       produces:
@@ -80,7 +80,7 @@ paths:
               type: string
             type: object
       summary: Create a new todo
-  /api/Todos/{id}:
+  /api/todos/{id}:
     delete:
       description: Delete a todo item by ID
       parameters:
@@ -117,7 +117,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Todo object to be updated
+      - description: Todo object to be updated title and/or detail
         in: body
         name: todo
         required: true
@@ -149,6 +149,41 @@ paths:
               type: string
             type: object
       summary: Update an existing todo
+  /api/todos/{id}/toggle-status:
+    put:
+      description: Toggle the completion status (true/false) of a todo item by ID.
+      parameters:
+      - description: Todo ID to toggle status
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Toggle the completion status of a todo
 schemes:
 - http
 swagger: "2.0"

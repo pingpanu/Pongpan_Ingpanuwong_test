@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/Todos": {
+        "/api/todos": {
             "get": {
                 "description": "Get a list of all todos",
                 "produces": [
@@ -91,7 +91,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/Todos/{id}": {
+        "/api/todos/{id}": {
             "put": {
                 "description": "Update a todo item by ID",
                 "consumes": [
@@ -110,7 +110,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Todo object to be updated",
+                        "description": "Todo object to be updated title and/or detail",
                         "name": "todo",
                         "in": "body",
                         "required": true,
@@ -173,6 +173,59 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/todos/{id}/toggle-status": {
+            "put": {
+                "description": "Toggle the completion status (true/false) of a todo item by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Toggle the completion status of a todo",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Todo ID to toggle status",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Todo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found",
