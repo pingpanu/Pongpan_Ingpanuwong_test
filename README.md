@@ -20,6 +20,7 @@ Please refer to the following
     3) User can edit the Todo by tap the yellow gear button
     4) User can delete the Todo by press the red button
     5) Whenever user do anything to any Todo, the app will automatically load the current state of Todos.
+       
     The backend is written in Go language because I mainly use C language when study at 42Bangkok, and I shortly found that
     I'm really familiar with Go really fast
     The frontend is written in Flutter because I have zero experience on Frontend, and since we currently access web via
